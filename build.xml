@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE project PUBLIC "-//ANT//DTD project//EN" "ant.dtd" [
+  <!-- !ENTITY propdefs SYSTEM "file:propdefs.xml"-->
+  ]>
+<project name="FlickrFaves" default="build-jar">
+	
+	<property file="build.properties" />
+	<property environment="env" />
+	<property name="build" location="build" />
+	<property name="project" value="${ant.project.name}" />
+	<property name="lib.dir" location="lib" />
+	<property name="conf.dir" location="config" />
+
+	<path id="project.classpath">
+		<path refid="libs.classpath" />
+		<path refid="classes.classpath" />
+	</path>
+	
+	<path id="libs.classpath">
+		<fileset dir="lib">
+			<include name="flickrapi-${flickrj.version}.jar" />
+			<include name="BrowserLauncher2-${browserLauncher2.version}.jar" />
+		</fileset>
+	</path>
+	
+	<path id="classes.classpath">
+		<pathelement location="${build}/classes" />
+	</path>
+
+	<target name="clean">
+		<delete includeemptydirs="true">
+			<fileset dir="${build}" includes="**/*"/>
+		</delete>
+	</target>
+	
+	<target name="init" depends="clean,build-zip">
+		<mkdir dir="${build}" />
+		<mkdir dir="${build}/classes" />
+	</target>
+
+	<target name="compile" depends="init">
+		<javac source="1.5" srcdir="src" destdir="${build}/classes"
+				debug="${compile.debug}" optimize="${compile.optimize}" 
+				failonerror="true" includes="**/*.java" target="1.5">
+			<exclude name="client/*" />
+			<classpath>
+				<path refid="project.classpath" />
+			</classpath>
+		</javac>
+	</target>
+	
+	<target name="build-jar" depends="compile">
+	  	<unjar src="${lib.dir}/flickrapi-${flickrj.version}.jar" dest="${build}/classes" />
+	  	<unjar src="${lib.dir}/BrowserLauncher2-${browserLauncher2.version}.jar" dest="${build}/classes" />
+	  	<jar destfile="${build}/FlickrFaves-${flickrFaves.version}.jar" 
+	  			basedir="${build}/classes" excludes="README.txt,COPYING.txt">
+			<manifest>
+				<attribute name="Main-Class" value="de/vonkoeller/flickrFaves/gui/FlickrFaves" />
+			</manifest>
+		</jar>
+	</target>
+	
+	<target name="build-zip" depends="clean">
+	  	<zip destfile="${build}/FlickrFaves-${flickrFaves.version}-src.zip" 
+	  		basedir="." />
+	</target>
+
+</project>
