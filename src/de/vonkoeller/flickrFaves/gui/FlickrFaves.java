@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006 Magnus von Koeller 
+ * Copyright (C) 2006-2013 Magnus von Koeller 
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -424,17 +424,17 @@ public class FlickrFaves extends JPanel implements ActionListener {
 		Preferences prefs = Preferences.userNodeForPackage(FlickrFaves.class);
 		prefs.put("defaultDownloadDir", downloadDir);
 		prefs.put("defaultMinSize", minSizeSpinner.getValue().toString());
-		prefs.put("defaultMaxFavesEnabled", Boolean.toString(maxFavesCheck
-				.isSelected()));
+		prefs.put("defaultMaxFavesEnabled",
+				Boolean.toString(maxFavesCheck.isSelected()));
 		prefs.put("defaultMaxFaves", maxFavesSpinner.getValue().toString());
-		prefs.put("defaultOverwrite", Boolean.toString(overwriteCheck
-				.isSelected()));
-		prefs.put("defaultDeleteStale", Boolean.toString(deleteStaleCheck
-				.isSelected()));
-		prefs.put("defaultDownloadPhotos", Boolean.toString(mediaTypePhoto
-				.isSelected()));
-		prefs.put("defaultDownloadVideos", Boolean.toString(mediaTypeVideo
-				.isSelected()));
+		prefs.put("defaultOverwrite",
+				Boolean.toString(overwriteCheck.isSelected()));
+		prefs.put("defaultDeleteStale",
+				Boolean.toString(deleteStaleCheck.isSelected()));
+		prefs.put("defaultDownloadPhotos",
+				Boolean.toString(mediaTypePhoto.isSelected()));
+		prefs.put("defaultDownloadVideos",
+				Boolean.toString(mediaTypeVideo.isSelected()));
 	}
 
 	/**
@@ -562,8 +562,9 @@ public class FlickrFaves extends JPanel implements ActionListener {
 		Runnable dlFaves = new Runnable() {
 			public void run() {
 				try {
-					Favorites.downloadAllFaves(downloadDir, mediaTypePhoto
-							.isSelected(), mediaTypeVideo.isSelected(),
+					Favorites.downloadAllFaves(downloadDir,
+							mediaTypePhoto.isSelected(),
+							mediaTypeVideo.isSelected(),
 							overwriteCheck.isSelected(),
 							((Integer) minSizeSpinner.getValue()),
 							maxFavesCheck.isSelected(),
@@ -840,8 +841,7 @@ public class FlickrFaves extends JPanel implements ActionListener {
 
 	private void updateDownloadNowEnabledState() {
 		startDownload.setEnabled((mediaTypePhoto.isSelected() || mediaTypeVideo
-				.isSelected())
-				&& downloadDir != null);
+				.isSelected()) && downloadDir != null);
 	}
 
 	/**

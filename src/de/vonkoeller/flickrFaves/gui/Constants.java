@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006 Magnus von Koeller 
+ * Copyright (C) 2006-2013 Magnus von Koeller 
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -26,16 +26,16 @@ package de.vonkoeller.flickrFaves.gui;
 public class Constants {
 
 	/** The human-readble version string. Also update build.properties! */
-	public static final String VERSION = "1.1.2";
+	public static final String VERSION = "2.0.0";
 
 	/** The build number, useful for automatic comparison of versions. */
-	public static final int BUILD_NO = 13;
+	public static final int BUILD_NO = 14;
 
 	/** The URL of the file containing the latest version, for version check. */
-	public static final String LAST_VERSION_URL = "http://www.vonkoeller.de/software_versions/FlickrFaves.txt";
+	public static final String LAST_VERSION_URL = "http://upload.magnusvk.com/software_versions/FlickrFaves.txt";
 
 	/** The homepage of the FlickrFaves project. */
-	public static final String FLICKR_FAVES_URL = "http://www.vonkoeller.de/flickrfaves";
+	public static final String FLICKR_FAVES_URL = "http://magnusvk.com/flickrfaves";
 
 	/** The user-agent string to use when performing the version check. */
 	public static final String USER_AGENT = "FlickrFaves/" + VERSION;

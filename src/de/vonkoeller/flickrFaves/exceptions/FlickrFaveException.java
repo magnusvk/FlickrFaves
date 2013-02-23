@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006 Magnus von Koeller 
+ * Copyright (C) 2006-2013 Magnus von Koeller 
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,8 +20,8 @@ package de.vonkoeller.flickrFaves.exceptions;
 
 /**
  * @author Magnus von Koeller
- *
- * Any irrecoverable error in FlickrFaves.
+ * 
+ *         Any irrecoverable error in FlickrFaves.
  */
 public class FlickrFaveException extends RuntimeException {
 
@@ -33,13 +33,13 @@ public class FlickrFaveException extends RuntimeException {
 	public FlickrFaveException() {
 		super();
 	}
-	
+
 	public FlickrFaveException(String msg) {
 		super(msg);
 	}
-	
+
 	public FlickrFaveException(String msg, Throwable cause) {
 		super(msg, cause);
 	}
-	
+
 }

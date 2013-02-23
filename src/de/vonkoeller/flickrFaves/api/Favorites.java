@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006 Magnus von Koeller 
+ * Copyright (C) 2006-2013 Magnus von Koeller 
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,6 +18,7 @@
  */
 package de.vonkoeller.flickrFaves.api;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -27,23 +28,27 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReadParam;
+import javax.imageio.ImageReader;
+import javax.imageio.ImageTypeSpecifier;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 
 import com.aetrion.flickr.Flickr;
-import com.aetrion.flickr.FlickrException;
 import com.aetrion.flickr.RequestContext;
 import com.aetrion.flickr.favorites.FavoritesInterface;
 import com.aetrion.flickr.photos.Photo;
 import com.aetrion.flickr.photos.PhotosInterface;
-import com.aetrion.flickr.photos.Size;
 
 import de.vonkoeller.flickrFaves.debug.Tracer;
 import de.vonkoeller.flickrFaves.exceptions.FlickrFaveException;
@@ -115,8 +120,16 @@ public class Favorites {
 			while (true) {
 				Tracer.trace("Now getting page " + i + " of list of faves...");
 				// get next page of pictures
-				pl = favI.getList(null, 500, i++, Collections
-						.singleton("media"));
+				Set<String> extras = new HashSet<String>();
+				extras.add("media");
+				extras.add("url_o");
+				extras.add("url_b");
+				extras.add("url_c");
+				extras.add("url_z");
+				extras.add("url_n");
+				extras.add("url_m");
+
+				pl = favI.getList(null, 500, i++, extras);
 				// none left? then we're done
 				if (pl.isEmpty())
 					break;
@@ -160,9 +173,7 @@ public class Favorites {
 				String id = toCheck.getName().substring(0,
 						toCheck.getName().length() - 4);
 				if (!faves.contains(id)) {
-					Tracer
-							.trace("Now deleting stale fave "
-									+ toCheck.getName());
+					Tracer.trace("Now deleting stale fave " + toCheck.getName());
 					toCheck.delete();
 				}
 			}
@@ -250,58 +261,24 @@ public class Favorites {
 
 				// check size by getting all sizes and seeing whether one is
 				// big enough
-				Tracer.trace("Now checking available sizes for " + cur);
+				Tracer.trace("Now downloading largest size for " + cur);
 
-				Collection sizes;
-				try {
-					sizes = photoI.getSizes(cur);
-				} catch (FlickrException e) {
-					if ("1".equals(e.getErrorCode())) {
-						/*
-						 * A 'photo not found' error can apparently be thrown
-						 * here when a user's favorite has become unaccessible
-						 * to him after adding it (for example, by making it
-						 * private). We can handle this gracefully.
-						 */
-						Tracer.trace("Photo '" + cur
-								+ " returned 'photo not found' -- skipping.");
-						numFailedDownloads++;
-						continue;
-					} else {
-						throw e;
-					}
-				}
+				String originalUrl = null;
+				if (curPhoto.getOriginalSecret() != null
+						&& !"".equals(curPhoto.getOriginalSecret()))
+					originalUrl = curPhoto.getOriginalUrl();
 
-				/*
-				 * Some images do not have an "original" size -- which would
-				 * automatically be the largest available size. Therefore, we
-				 * check all available sizes and choose the largest one.
-				 */
-				String largestUrl = null;
-				int largestSize = -1;
-
-				for (Object curObj : sizes) {
-					Size curSize = (Size) curObj;
-					Tracer.trace("Largest size: " + largestSize
-							+ "; current size: " + curSize.getWidth() + " ("
-							+ curSize.getLabel() + ") [" + curSize.getMedia()
-							+ "]");
-					if (curSize.getMedia().equals(curPhoto.getMedia())
-							&& curSize.getLabel() != Size.VIDEO_PLAYER
-							&& curSize.getWidth() > largestSize
-							&& (curSize.getHeight() >= minSize || curSize
-									.getWidth() >= minSize)) {
-						Tracer.trace("Choosing size " + curSize.getLabel()
-								+ " as new largest size...");
-						largestUrl = curSize.getSource();
-						largestSize = curSize.getWidth();
-					}
-				}
+				// download the largest available size
+				String largestUrl = originalUrl;
+				if (largestUrl == null)
+					largestUrl = curPhoto.getLargeUrl();
+				if (largestUrl == null)
+					largestUrl = curPhoto.getMediumUrl();
+				if (largestUrl == null)
+					largestUrl = curPhoto.getSmallUrl();
 
 				// sufficiently large original available, download it
 				if (largestUrl != null) {
-					Tracer.trace(cur + " sufficiently large, connecting...");
-
 					// update progress message
 					SwingUtilities.invokeLater(new Runnable() {
 						public void run() {
@@ -316,8 +293,7 @@ public class Favorites {
 					URLConnection urlConn = url.openConnection();
 
 					// set timeout
-					urlConn
-							.setConnectTimeout(Constants.DOWNLOAD_TIMEOUT * 1000);
+					urlConn.setConnectTimeout(Constants.DOWNLOAD_TIMEOUT * 1000);
 					urlConn.setReadTimeout(Constants.DOWNLOAD_TIMEOUT * 1000);
 
 					// get file size
@@ -385,27 +361,23 @@ public class Favorites {
 							 * Therefore we retry retry downloading the whole
 							 * image once.
 							 */
-							Tracer
-									.trace("Caught IOException while attempting download... Retrying whole image...");
+							Tracer.trace("Caught IOException while attempting download... Retrying whole image...");
 							inS.close();
 							urlConn = url.openConnection();
 
 							// set timeout
-							urlConn
-									.setConnectTimeout(Constants.DOWNLOAD_TIMEOUT * 1000);
-							urlConn
-									.setReadTimeout(Constants.DOWNLOAD_TIMEOUT * 1000);
+							urlConn.setConnectTimeout(Constants.DOWNLOAD_TIMEOUT * 1000);
+							urlConn.setReadTimeout(Constants.DOWNLOAD_TIMEOUT * 1000);
 
-							inS = new BufferedInputStream(urlConn
-									.getInputStream());
+							inS = new BufferedInputStream(
+									urlConn.getInputStream());
 							outS = new BufferedOutputStream(
 									new FileOutputStream(curFullPath));
 							try {
 								downloadImage(inS, outS, fileSize, fileProgress);
 							} catch (IOException e2) {
 								// connection timed out again -- give up
-								Tracer
-										.trace("Caught IOException again... Giving up...");
+								Tracer.trace("Caught IOException again... Giving up...");
 								numFailedDownloads++;
 								continue;
 							}
@@ -420,11 +392,10 @@ public class Favorites {
 						 * however, we might as well handle it graciously and
 						 * try downloading the other photos.
 						 */
-						Tracer
-								.trace("Caught IOException outside downloadImage() "
-										+ "while attemption to download "
-										+ curFilename
-										+ " -- failing gracefully");
+						Tracer.trace("Caught IOException outside downloadImage() "
+								+ "while attemption to download "
+								+ curFilename
+								+ " -- failing gracefully");
 						numFailedDownloads++;
 						continue;
 					} finally {
@@ -436,6 +407,22 @@ public class Favorites {
 								fileProgress.revalidate();
 							}
 						});
+					}
+
+					Tracer.trace("Checking dimensions of the downloaded file...");
+					File downloadedFile = new File(curFullPath);
+					BufferedImage image = getBufferedImage(downloadedFile);
+					if (!downloadedFile.exists()
+							|| image == null
+							|| (image.getWidth() < minSize && image.getHeight() < minSize)) {
+						Tracer.trace("Image not large enough! Deleting and excluding.");
+
+						// image is too small
+						if (downloadedFile != null)
+							downloadedFile.delete();
+
+						// make sure that we don't try this again
+						excl.createNewFile();
 					}
 
 					Tracer.trace("Done downloading " + curFilename + "...");
@@ -519,5 +506,47 @@ public class Favorites {
 				});
 			}
 		}
+	}
+
+	private static BufferedImage getBufferedImage(File stream) {
+		BufferedImage bufferedImage = null;
+
+		Iterator<ImageReader> iter = ImageIO.getImageReaders(stream);
+
+		Exception lastException = null;
+		while (iter.hasNext()) {
+			ImageReader reader = null;
+			try {
+				reader = (ImageReader) iter.next();
+				ImageReadParam param = reader.getDefaultReadParam();
+				reader.setInput(stream, true, true);
+				Iterator<ImageTypeSpecifier> imageTypes = reader
+						.getImageTypes(0);
+				while (imageTypes.hasNext()) {
+					ImageTypeSpecifier imageTypeSpecifier = imageTypes.next();
+					int bufferedImageType = imageTypeSpecifier
+							.getBufferedImageType();
+					if (bufferedImageType == BufferedImage.TYPE_BYTE_GRAY) {
+						param.setDestinationType(imageTypeSpecifier);
+						break;
+					}
+				}
+				bufferedImage = reader.read(0, param);
+				if (null != bufferedImage)
+					break;
+			} catch (Exception e) {
+				lastException = e;
+			} finally {
+				if (null != reader)
+					reader.dispose();
+			}
+		}
+		// If you don't have an image at the end of all readers
+		if (null == bufferedImage) {
+			if (null != lastException) {
+				throw new RuntimeException(lastException);
+			}
+		}
+		return bufferedImage;
 	}
 }

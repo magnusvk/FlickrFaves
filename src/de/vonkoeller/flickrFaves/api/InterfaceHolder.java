@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006 Magnus von Koeller 
+ * Copyright (C) 2006-2013 Magnus von Koeller 
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -34,10 +34,10 @@ import de.vonkoeller.flickrFaves.exceptions.FlickrFaveException;
 public class InterfaceHolder {
 
 	/** This application's Flickr API key. */
-	static final String API_KEY = "995070972bd64558e2f6a3dec03b8e75";
+	static final String API_KEY = "6c2adaa2be4820d7f57cb7a71f9ae89d";
 
 	/** This applications' Flickr shared secret. */
-	static final String SHARED_SECRET = "7540c8541cdb5db6";
+	static final String SHARED_SECRET = "50ce6ddb14a77d33";
 
 	/** The current flickr instance. */
 	private static Flickr flickr = null;
