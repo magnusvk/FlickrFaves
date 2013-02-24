@@ -26,10 +26,10 @@ package de.vonkoeller.flickrFaves.gui;
 public class Constants {
 
 	/** The human-readble version string. Also update build.properties! */
-	public static final String VERSION = "2.0.0";
+	public static final String VERSION = "2.0.2";
 
 	/** The build number, useful for automatic comparison of versions. */
-	public static final int BUILD_NO = 14;
+	public static final int BUILD_NO = 17;
 
 	/** The URL of the file containing the latest version, for version check. */
 	public static final String LAST_VERSION_URL = "http://upload.magnusvk.com/software_versions/FlickrFaves.txt";

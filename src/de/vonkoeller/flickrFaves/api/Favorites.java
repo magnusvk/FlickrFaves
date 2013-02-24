@@ -45,6 +45,7 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 
 import com.aetrion.flickr.Flickr;
+import com.aetrion.flickr.FlickrException;
 import com.aetrion.flickr.RequestContext;
 import com.aetrion.flickr.favorites.FavoritesInterface;
 import com.aetrion.flickr.photos.Photo;
@@ -122,6 +123,7 @@ public class Favorites {
 				// get next page of pictures
 				Set<String> extras = new HashSet<String>();
 				extras.add("media");
+				extras.add("originalsecret");
 				extras.add("url_o");
 				extras.add("url_b");
 				extras.add("url_c");
@@ -264,9 +266,12 @@ public class Favorites {
 				Tracer.trace("Now downloading largest size for " + cur);
 
 				String originalUrl = null;
-				if (curPhoto.getOriginalSecret() != null
-						&& !"".equals(curPhoto.getOriginalSecret()))
+				try {
 					originalUrl = curPhoto.getOriginalUrl();
+				} catch (FlickrException e) {
+					// if the original url just isn't available, fine. no need
+					// to panic.
+				}
 
 				// download the largest available size
 				String largestUrl = originalUrl;
@@ -411,10 +416,17 @@ public class Favorites {
 
 					Tracer.trace("Checking dimensions of the downloaded file...");
 					File downloadedFile = new File(curFullPath);
-					BufferedImage image = getBufferedImage(downloadedFile);
+					BufferedImage image = null;
+					try {
+						image = getBufferedImage(downloadedFile);
+					} catch (Exception e) {
+						Tracer.trace("Exception "
+								+ e
+								+ " occured when trying to get file dimensions. Ignoring...");
+					}
 					if (!downloadedFile.exists()
-							|| image == null
-							|| (image.getWidth() < minSize && image.getHeight() < minSize)) {
+							|| (image != null && image.getWidth() < minSize && image
+									.getHeight() < minSize)) {
 						Tracer.trace("Image not large enough! Deleting and excluding.");
 
 						// image is too small
