@@ -57,16 +57,13 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
 import com.aetrion.flickr.FlickrException;
+import com.centerkey.bareBonesBrowserLaunch.BareBonesBrowserLaunch;
 
 import de.vonkoeller.flickrFaves.api.AuthHolder;
 import de.vonkoeller.flickrFaves.api.Authentication;
 import de.vonkoeller.flickrFaves.api.Favorites;
 import de.vonkoeller.flickrFaves.debug.Tracer;
 import de.vonkoeller.flickrFaves.exceptions.FlickrFaveException;
-import edu.stanford.ejalbert.BrowserLauncher;
-import edu.stanford.ejalbert.exception.BrowserLaunchingExecutionException;
-import edu.stanford.ejalbert.exception.BrowserLaunchingInitializingException;
-import edu.stanford.ejalbert.exception.UnsupportedOperatingSystemException;
 
 /**
  * @author Magnus von Koeller
@@ -192,8 +189,8 @@ public class FlickrFaves extends JPanel implements ActionListener {
 	 */
 	private void authWeb() {
 		try {
-			BrowserLauncher bLaunch = new BrowserLauncher(null);
-			bLaunch.openURLinBrowser(Authentication.buildAuthURL().toString());
+			BareBonesBrowserLaunch.openURL(Authentication.buildAuthURL()
+					.toString());
 		} catch (Exception e) {
 			showExceptionAndQuit(e);
 		}
@@ -702,12 +699,7 @@ public class FlickrFaves extends JPanel implements ActionListener {
 		boolean encourageErrorReport = false;
 		String errorMsg = "<html>An error has occurred and this program must be "
 				+ "terminated! <br><br>This seems to be the reason:<br>";
-		if (e instanceof UnsupportedOperatingSystemException)
-			errorMsg += "<i>Your operating system is not supported.</i>";
-		else if (e instanceof BrowserLaunchingExecutionException
-				|| e instanceof BrowserLaunchingInitializingException)
-			errorMsg += "<i>Failed to open your browser for authentication.</i>";
-		else if (e instanceof FlickrException) {
+		if (e instanceof FlickrException) {
 			FlickrException flickrE = (FlickrException) e;
 			if ("105".equals(flickrE.getErrorCode())
 					|| "0".equals(flickrE.getErrorCode())) {
@@ -821,8 +813,7 @@ public class FlickrFaves extends JPanel implements ActionListener {
 						JOptionPane.INFORMATION_MESSAGE);
 				if (openFlickrFavesHp == JOptionPane.YES_OPTION) {
 					// go to FlickrFaves' homepage
-					BrowserLauncher bLaunch = new BrowserLauncher(null);
-					bLaunch.openURLinBrowser(Constants.FLICKR_FAVES_URL);
+					BareBonesBrowserLaunch.openURL(Constants.FLICKR_FAVES_URL);
 				}
 			}
 		} catch (Exception e) {

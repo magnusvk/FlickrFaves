@@ -25,8 +25,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -274,16 +274,16 @@ public class Favorites {
 				}
 
 				// download the largest available size
-				String largestUrl = originalUrl;
-				if (largestUrl == null)
-					largestUrl = curPhoto.getLargeUrl();
-				if (largestUrl == null)
-					largestUrl = curPhoto.getMediumUrl();
-				if (largestUrl == null)
-					largestUrl = curPhoto.getSmallUrl();
+				HttpURLConnection urlConn = openHttpConnection(originalUrl);
+				if (urlConn == null || urlConn.getResponseCode() != 200)
+					urlConn = openHttpConnection(curPhoto.getLargeUrl());
+				if (urlConn == null || urlConn.getResponseCode() != 200)
+					urlConn = openHttpConnection(curPhoto.getMediumUrl());
+				if (urlConn == null || urlConn.getResponseCode() != 200)
+					urlConn = openHttpConnection(curPhoto.getSmallUrl());
 
-				// sufficiently large original available, download it
-				if (largestUrl != null) {
+				// a URL is available, download it, check size later
+				if (urlConn != null) {
 					// update progress message
 					SwingUtilities.invokeLater(new Runnable() {
 						public void run() {
@@ -292,10 +292,6 @@ public class Favorites {
 							progressMsg.revalidate();
 						}
 					});
-
-					// open URL connection
-					URL url = new URL(largestUrl);
-					URLConnection urlConn = url.openConnection();
 
 					// set timeout
 					urlConn.setConnectTimeout(Constants.DOWNLOAD_TIMEOUT * 1000);
@@ -368,7 +364,8 @@ public class Favorites {
 							 */
 							Tracer.trace("Caught IOException while attempting download... Retrying whole image...");
 							inS.close();
-							urlConn = url.openConnection();
+							urlConn = (HttpURLConnection) urlConn.getURL()
+									.openConnection();
 
 							// set timeout
 							urlConn.setConnectTimeout(Constants.DOWNLOAD_TIMEOUT * 1000);
@@ -560,5 +557,20 @@ public class Favorites {
 			}
 		}
 		return bufferedImage;
+	}
+
+	private static HttpURLConnection openHttpConnection(String url)
+			throws IOException {
+		if (url == null)
+			return null;
+
+		// disable redirects to make sure we don't get the image not
+		// available image
+		HttpURLConnection.setFollowRedirects(false);
+		HttpURLConnection largestUrl = (HttpURLConnection) new URL(url)
+				.openConnection();
+		largestUrl.connect();
+
+		return largestUrl;
 	}
 }

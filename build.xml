@@ -51,7 +51,6 @@
 	
 	<target name="build-jar" depends="compile">
 	  	<unjar src="${lib.dir}/flickrapi-${flickrj.version}.jar" dest="${build}/classes" />
-	  	<unjar src="${lib.dir}/BrowserLauncher2-${browserLauncher2.version}.jar" dest="${build}/classes" />
 	  	<jar destfile="${build}/FlickrFaves-${flickrFaves.version}.jar" 
 	  			basedir="${build}/classes" excludes="README.txt,COPYING.txt">
 			<manifest>
