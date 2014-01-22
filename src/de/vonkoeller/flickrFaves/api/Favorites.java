@@ -22,6 +22,7 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -39,6 +40,8 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageReadParam;
 import javax.imageio.ImageReader;
 import javax.imageio.ImageTypeSpecifier;
+import javax.imageio.stream.FileImageInputStream;
+import javax.imageio.stream.ImageInputStream;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
@@ -517,10 +520,12 @@ public class Favorites {
 		}
 	}
 
-	private static BufferedImage getBufferedImage(File stream) {
+	private static BufferedImage getBufferedImage(File stream)
+			throws FileNotFoundException, IOException {
 		BufferedImage bufferedImage = null;
+		ImageInputStream imageStream = new FileImageInputStream(stream);
 
-		Iterator<ImageReader> iter = ImageIO.getImageReaders(stream);
+		Iterator<ImageReader> iter = ImageIO.getImageReaders(imageStream);
 
 		Exception lastException = null;
 		while (iter.hasNext()) {
@@ -528,7 +533,7 @@ public class Favorites {
 			try {
 				reader = (ImageReader) iter.next();
 				ImageReadParam param = reader.getDefaultReadParam();
-				reader.setInput(stream, true, true);
+				reader.setInput(imageStream, true, true);
 				Iterator<ImageTypeSpecifier> imageTypes = reader
 						.getImageTypes(0);
 				while (imageTypes.hasNext()) {
