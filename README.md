@@ -2,7 +2,7 @@
 
 FlickrFaves is a small utility for **downloading high-resultion versions of your Flickr favorites to your harddrive**. If you are like me this means hundreds of beautiful new wallpapers at the click of a button! FlickrFaves is a cross-platform utility written in Java.
 
-[**Download now!**](http://upload.magnusvk.com/FlickrFaves-2.0.5.jar) (current version: 2.0.5)
+[**Download now!**](https://github.com/magnusvk/FlickrFaves/releases/download/v2.0.5/FlickrFaves-2.0.5.jar) (current version: 2.0.5)
 
 * [executable](https://github.com/magnusvk/FlickrFaves/releases/download/v2.0.5/FlickrFaves-2.0.5.jar): JAR-file; simply double-click to run on most systems; requires Java, see below
 * [source](https://github.com/magnusvk/FlickrFaves/archive/v2.0.5.zip): ZIP-file; cotains only source code
