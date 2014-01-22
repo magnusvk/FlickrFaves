@@ -4,8 +4,8 @@ FlickrFaves is a small utility for **downloading high-resultion versions of your
 
 [**Download now!**](http://upload.magnusvk.com/FlickrFaves-2.0.5.jar) (current version: 2.0.5)
 
-* [executable](http://upload.magnusvk.com/FlickrFaves-2.0.5.jar): JAR-file; simply double-click to run on most systems; requires Java, see below
-* [source](http://upload.magnusvk.com/FlickrFaves-2.0.5-src.zip): ZIP-file; cotains only source code
+* [executable](https://github.com/magnusvk/FlickrFaves/releases/download/v2.0.5/FlickrFaves-2.0.5.jar): JAR-file; simply double-click to run on most systems; requires Java, see below
+* [source](https://github.com/magnusvk/FlickrFaves/archive/v2.0.5.zip): ZIP-file; cotains only source code
 
 **Warning:** Hundreds of people use FlickrFaves every month without any problem whatsoever. However, this software is released *without any warranty*. Backup the directory you are downloading to and use at your own risk!
 
