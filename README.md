@@ -11,7 +11,7 @@ FlickrFaves is a small utility for **downloading high-resultion versions of your
 
 **License:** FlickrFaves is released as open-source under the [GNU General Public License](http://www.gnu.org/licenses/gpl.html) version 2, or any later version published by the Free Software Foundation.
 
-**Questions? Problems? Comments? Bugs?** — [email me!](mailto:hello@magnusvk.com)
+**Questions? Problems? Comments? Bugs?** — [file an issue!](https://github.com/magnusvk/FlickrFaves/issues)
 
 ### Changelog
 
