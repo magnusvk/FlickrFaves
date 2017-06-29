@@ -1,5 +1,11 @@
 ## FlickrFaves
 
+### Unmaintained
+
+Unfortunately I do not currently have the time to maintain FlickrFaves. I have received reports of problems authorizing with an "invalid frob" error. I do not anticipate finding the time to fix this issue. Please get in touch with me if you'd like to take over maintenance of this tool.
+
+### Readme
+
 FlickrFaves is a small utility for **downloading high-resultion versions of your Flickr favorites to your harddrive**. If you are like me this means hundreds of beautiful new wallpapers at the click of a button! FlickrFaves is a cross-platform utility written in Java.
 
 [**Download now!**](https://github.com/magnusvk/FlickrFaves/releases/download/v2.0.6/FlickrFaves-2.0.6.jar) (current version: 2.0.6)
