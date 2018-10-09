@@ -61,4 +61,6 @@ FlickrFaves is a small utility for **downloading high-resultion versions of your
 This software comes packaged with the following open-source libraries:
 
 * [BrowserLauncher2](http://sf.net/projects/browserlaunch2)
-* [flickrj](http://sf.net/projects/flickrj)
+* [Flickr4Java](https://github.com/boncey/Flickr4Java)
+* [ScribeJava](https://github.com/scribejava/scribejava)
+* [SLF4J](https://github.com/qos-ch/slf4j)

@@ -20,13 +20,15 @@ package de.vonkoeller.flickrFaves.api;
 
 import java.util.prefs.Preferences;
 
-import com.aetrion.flickr.Flickr;
-import com.aetrion.flickr.FlickrException;
-import com.aetrion.flickr.RequestContext;
-import com.aetrion.flickr.auth.Auth;
-import com.aetrion.flickr.auth.AuthInterface;
+import com.flickr4java.flickr.Flickr;
+import com.flickr4java.flickr.FlickrException;
+import com.flickr4java.flickr.RequestContext;
+import com.flickr4java.flickr.auth.Auth;
+import com.flickr4java.flickr.auth.AuthInterface;
 
 import de.vonkoeller.flickrFaves.exceptions.FlickrFaveException;
+import de.vonkoeller.flickrFaves.server.SimpleHttpServer;
+import org.scribe.model.Token;
 
 /**
  * @author Magnus von Koeller
@@ -42,8 +44,11 @@ public class AuthHolder {
 		super();
 	}
 
-	/** The Flickr API frob. */
-	private static String frob = null;
+	/** The Flickr API requestToken. */
+	private static Token requestToken = null;
+
+	/** The Flickr API oauth_verifier */
+	private static String verifier = null;
 
 	/** The Flickr API token. */
 	private static String token = null;
@@ -66,8 +71,11 @@ public class AuthHolder {
 	 * Forget current authorization token and delete it from preferences.
 	 */
 	public static void deauthorize() {
-		// first set frob, token and auth to null
-		frob = null;
+		// if we go to this from authorizeNext(), need to stop the server
+		SimpleHttpServer.stop();
+
+		// first set requestToken, token and auth to null
+		requestToken = null;
 		token = null;
 		auth = null;
 		// delete token from preferences
@@ -136,8 +144,9 @@ public class AuthHolder {
 		if (auth == null && token != null) {
 			Flickr flickrI = InterfaceHolder.getFlickrI();
 			AuthInterface authI = flickrI.getAuthInterface();
+
 			try {
-				auth = authI.checkToken(token);
+				auth = authI.checkToken(token, "");
 			} catch (FlickrException e) {
 				// is the token invalid? then fail silently
 				if (e.getErrorCode() == "98")
@@ -150,18 +159,18 @@ public class AuthHolder {
 	}
 
 	/**
-	 * @return the frob
+	 * @return the requestToken
 	 */
-	public static String getFrob() {
-		return frob;
+	public static Token getRequestToken() {
+		return requestToken;
 	}
 
 	/**
-	 * @param frob
-	 *            the frob to set
+	 * @param requestToken
+	 *            the requestToken to set
 	 */
-	public static void setFrob(String frob) {
-		AuthHolder.frob = frob;
+	public static void setRequestToken(Token requestToken) {
+		AuthHolder.requestToken = requestToken;
 	}
 
 	/**
@@ -177,5 +186,20 @@ public class AuthHolder {
 	 */
 	public static void setToken(String token) {
 		AuthHolder.token = token;
+	}
+
+	/**
+	 * @return String verifier
+	 */
+	public static String getVerifier() {
+		return verifier;
+	}
+
+	/**
+	 * @param verifier
+	 * 				the verifier to set
+	 */
+	public static void setVerifier(String verifier) {
+		AuthHolder.verifier = verifier;
 	}
 }

@@ -49,6 +49,10 @@ public class Constants {
 	/** The timeout in seconds before the version check is aborted. */
 	public static final int VERSION_CHECK_TIMEOUT = 2;
 
+	/** The callback url to get oauth verifier after user has granted permission */
+	public static final int OAUTH_CALLBACK_PORT = 8801;
+	public static final String OAUTH_CALLBACK_URL = "http://localhost:" + OAUTH_CALLBACK_PORT;
+
 	/** Print debug messages? */
 	public static final boolean DEBUG = true;
 

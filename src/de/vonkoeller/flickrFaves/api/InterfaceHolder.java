@@ -20,9 +20,9 @@ package de.vonkoeller.flickrFaves.api;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import com.aetrion.flickr.Flickr;
-import com.aetrion.flickr.REST;
-import com.aetrion.flickr.RequestContext;
+import com.flickr4java.flickr.Flickr;
+import com.flickr4java.flickr.REST;
+import com.flickr4java.flickr.RequestContext;
 
 import de.vonkoeller.flickrFaves.exceptions.FlickrFaveException;
 
@@ -59,7 +59,7 @@ public class InterfaceHolder {
 		if (flickr == null) {
 			try {
 				flickr = new Flickr(API_KEY, SHARED_SECRET, new REST());
-			} catch (ParserConfigurationException e) {
+			} catch (IllegalArgumentException e) {
 				throw new FlickrFaveException(
 						"Could not instantiate Flickr object.", e);
 			}
