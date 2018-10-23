@@ -47,12 +47,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 
-import com.aetrion.flickr.Flickr;
-import com.aetrion.flickr.FlickrException;
-import com.aetrion.flickr.RequestContext;
-import com.aetrion.flickr.favorites.FavoritesInterface;
-import com.aetrion.flickr.photos.Photo;
-import com.aetrion.flickr.photos.PhotosInterface;
+import com.flickr4java.flickr.Flickr;
+import com.flickr4java.flickr.FlickrException;
+import com.flickr4java.flickr.RequestContext;
+import com.flickr4java.flickr.favorites.FavoritesInterface;
+import com.flickr4java.flickr.photos.Photo;
+import com.flickr4java.flickr.photos.PhotosInterface;
 
 import de.vonkoeller.flickrFaves.debug.Tracer;
 import de.vonkoeller.flickrFaves.exceptions.FlickrFaveException;
@@ -128,11 +128,9 @@ public class Favorites {
 				extras.add("media");
 				extras.add("originalsecret");
 				extras.add("url_o");
+				extras.add("url_k");
+				extras.add("url_h");
 				extras.add("url_b");
-				extras.add("url_c");
-				extras.add("url_z");
-				extras.add("url_n");
-				extras.add("url_m");
 
 				pl = favI.getList(null, 500, i++, extras);
 				// none left? then we're done
@@ -279,11 +277,11 @@ public class Favorites {
 				// download the largest available size
 				HttpURLConnection urlConn = openHttpConnection(originalUrl);
 				if (urlConn == null || urlConn.getResponseCode() != 200)
+					urlConn = openHttpConnection(curPhoto.getLarge2048Url());
+				if (urlConn == null || urlConn.getResponseCode() != 200)
+					urlConn = openHttpConnection(curPhoto.getLarge1600Url());
+				if (urlConn == null || urlConn.getResponseCode() != 200)
 					urlConn = openHttpConnection(curPhoto.getLargeUrl());
-				if (urlConn == null || urlConn.getResponseCode() != 200)
-					urlConn = openHttpConnection(curPhoto.getMediumUrl());
-				if (urlConn == null || urlConn.getResponseCode() != 200)
-					urlConn = openHttpConnection(curPhoto.getSmallUrl());
 
 				// a URL is available, download it, check size later
 				if (urlConn != null) {

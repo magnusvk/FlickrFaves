@@ -21,12 +21,15 @@ package de.vonkoeller.flickrFaves.api;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import com.aetrion.flickr.Flickr;
-import com.aetrion.flickr.auth.Auth;
-import com.aetrion.flickr.auth.AuthInterface;
-import com.aetrion.flickr.auth.Permission;
+import com.flickr4java.flickr.Flickr;
+import com.flickr4java.flickr.auth.Auth;
+import com.flickr4java.flickr.auth.AuthInterface;
+import com.flickr4java.flickr.auth.Permission;
 
 import de.vonkoeller.flickrFaves.exceptions.FlickrFaveException;
+import de.vonkoeller.flickrFaves.gui.Constants;
+import org.scribe.model.Token;
+import org.scribe.model.Verifier;
 
 /**
  * @author Magnus von Koeller
@@ -45,20 +48,13 @@ public class Authentication {
 		Flickr flickrI = InterfaceHolder.getFlickrI();
 		AuthInterface authI = flickrI.getAuthInterface();
 
-		// get frob
-		String frob;
-		try {
-			frob = authI.getFrob();
-		} catch (Exception e) {
-			throw new FlickrFaveException("Retrieving frob failed.", e);
-		}
+		Token token = authI.getRequestToken(Constants.OAUTH_CALLBACK_URL);
+		AuthHolder.setRequestToken(token);
 
-		// store frob for later use
-		AuthHolder.setFrob(frob);
+		String url = authI.getAuthorizationUrl(token, Permission.READ);
 
-		// build authentication URL
 		try {
-			return authI.buildAuthenticationUrl(Permission.READ, frob);
+			return new URL(url);
 		} catch (MalformedURLException e) {
 			throw new FlickrFaveException("flickrj could not build "
 					+ "authentication URL.", e);
@@ -75,17 +71,17 @@ public class Authentication {
 		Flickr flickrI = InterfaceHolder.getFlickrI();
 		AuthInterface authI = flickrI.getAuthInterface();
 
-		// shared secret already initialized
-
 		try {
-			// get token
-			Auth auth = authI.getToken(AuthHolder.getFrob());
+			Token accessToken = authI.getAccessToken(AuthHolder.getRequestToken(), new Verifier(AuthHolder.getVerifier()));
+
+			Auth auth = authI.checkToken(accessToken);
+
 			// save token to AuthHolder and its preferences
 			AuthHolder.setAuth(auth);
 			AuthHolder.saveTokenToPrefs();
 			return auth;
 		} catch (Exception e) {
-			throw new FlickrFaveException("Converting frob to token failed.", e);
+			throw new FlickrFaveException("Get access token failed.", e);
 		}
 	}
 
